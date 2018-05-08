@@ -1,0 +1,61 @@
+buildscript {
+    ext {
+        springBootVersion = '2.0.1.RELEASE'
+    }
+    repositories {
+        maven { url 'https://repo.spring.io/libs-milestone' }
+        maven { url 'https://plugins.gradle.org/m2/' }
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath "io.spring.gradle:dependency-management-plugin:1.0.5.RELEASE"
+
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+
+    maven { url "https://repo.spring.io/snapshot" }
+    maven { url "https://repo.spring.io/milestone" }
+    maven { url "http://repo.spring.io/release" }
+ }
+
+
+ext {
+    springCloudVersion = 'Finchley.BUILD-SNAPSHOT'
+}
+
+configurations {
+    all.collect { configuration ->
+        configuration.exclude group: 'org.springframework.cloud', module: 'spring-cloud-netflix-ribbon'
+        configuration.exclude group: 'org.springframework.cloud', module: 'spring-cloud-netflix-archaius'
+        configuration.exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-netflix-ribbon'
+        configuration.exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-netflix-archaius'
+        configuration.exclude group: 'io.github.openfeign', module: 'feign-hystrix'
+    }
+}
+
+dependencies {
+    compile('org.springframework.cloud:spring-cloud-starter-openfeign')
+    compile('org.springframework.cloud:spring-cloud-starter-sleuth')
+    compile 'org.springframework.cloud:spring-cloud-starter-zipkin'
+    compile 'org.springframework.boot:spring-boot-starter-web'
+    compile 'org.springframework.boot:spring-boot-starter-actuator'
+
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
